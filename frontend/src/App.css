@@ -1,0 +1,53 @@
+.App {
+  text-align: center;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.upload-section,
+.names-section,
+.action-section,
+.table-section,
+.result-section {
+  margin-bottom: 20px;
+}
+
+input[type="file"],
+input[type="text"] {
+  padding: 8px;
+  font-size: 1rem;
+}
+
+button {
+  padding: 10px 15px;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 15px;
+}
+
+th,
+td {
+  padding: 10px;
+  border: 1px solid #ddd;
+  text-align: center;
+}
+
+h2 {
+  margin-top: 20px;
+}
+
+.result-section ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+li {
+  font-size: 1.1rem;
+  margin-bottom: 5px;
+}

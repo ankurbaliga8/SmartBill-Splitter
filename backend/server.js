@@ -7,9 +7,15 @@ const { TextractClient, DetectDocumentTextCommand } = require('@aws-sdk/client-t
 const OpenAI = require('openai');
 
 const app = express();
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT;
 
-app.use(cors());
+// Use your frontend's Vercel URL or localhost for development
+const allowedOrigin = process.env.FRONTEND_URL;
+
+app.use(cors({
+    origin: allowedOrigin, // Allow only the frontend URL
+}));
+
 app.use(express.json());
 
 const storage = multer.memoryStorage();

@@ -10,7 +10,7 @@ function App() {
   const [selectedNames, setSelectedNames] = useState([]);
   const [splitResult, setSplitResult] = useState(null);
   const [currency, setCurrency] = useState('$'); // Default currency symbol
-  const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://localhost:3001';
+  const backendUrl = process.env.REACT_APP_BACKEND_URL;
 
   const handleFileChange = (e) => {
     setFile(e.target.files[0]);

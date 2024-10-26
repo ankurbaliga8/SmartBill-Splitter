@@ -128,3 +128,28 @@ smart-bill-splitter/
 3. **Automatic Bill Interpretation**: The backend processes the bill image and extracts items and prices.
 4. **Item Assignment and Editing**: Review and assign each item to one or more users. Edit item prices if needed or add missing items manually.
 5. **Calculate Split**: Once all items are assigned, click "Calculate Split" to view each person's total.
+
+### Deployment
+
+#### Deploying to Vercel
+
+##### Deploy Backend:
+
+1. Go to [Vercel](https://vercel.com/) and create a new project.
+2. Select the **backend** folder for deployment.
+3. Add the necessary environment variables (from your `.env` file) in the Vercel project settings.
+
+##### Deploy Frontend:
+
+1. Create another project on Vercel and select the **frontend** folder.
+2. In the frontend `.env` file, use your deployed backend URL:
+
+   ```env
+   REACT_APP_BACKEND_URL=https://your-backend-url.vercel.app
+   ```
+
+3. Add this environment variable in Vercel’s frontend project settings.
+
+### Testing
+
+Verify the deployed frontend connects to the backend and that both components are fully functional.

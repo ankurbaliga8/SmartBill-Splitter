@@ -10,6 +10,7 @@ function App() {
   const [selectedNames, setSelectedNames] = useState([]);
   const [splitResult, setSplitResult] = useState(null);
   const [currency, setCurrency] = useState('$'); // Default currency symbol
+  const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://localhost:3001';
 
   const handleFileChange = (e) => {
     setFile(e.target.files[0]);
@@ -30,10 +31,8 @@ function App() {
     formData.append('bill', file);
 
     try {
-      const result = await axios.post('http://localhost:3001/upload-bill', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
+      const result = await axios.post(`${backendUrl}/upload-bill`, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
       });
 
       setItems(result.data.items.map(item => ({ ...item, selected: [] }))); // Initialize selected array

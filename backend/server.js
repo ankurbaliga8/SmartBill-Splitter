@@ -44,7 +44,7 @@ async function detectCurrencyWithGPT(text) {
             Instructions:
             - Based on the terms, symbols, and context within the receipt data, identify the currency as accurately as possible.
             - Common examples include:
-                - "₹", "INR", "GST" might indicate Indian Rupees.
+                - "₹", "INR", "GST", "MRP", "CGST", "SGST" might indicate Indian Rupees.
                 - "$", "USD" might indicate US Dollars.
                 - "£", "GBP" might indicate British Pounds.
             - Respond with only the currency code in ISO format (e.g., "INR" for Indian Rupees, "USD" for US Dollars).

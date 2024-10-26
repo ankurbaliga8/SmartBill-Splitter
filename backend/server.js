@@ -23,7 +23,7 @@ const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY,
 });
 
-// Function to process Textract data and prepare it for GPT interpretation
+// Function to preprocess Textract data for GPT
 function preprocessTextractData(textractData) {
     const lines = [];
     textractData.Blocks.forEach(block => {
@@ -31,10 +31,42 @@ function preprocessTextractData(textractData) {
             lines.push(block.Text.trim());
         }
     });
-    return lines.join('\n'); // Join lines for better context in GPT
+    return lines.join('\n');
 }
 
-// Function to interpret structured text with GPT, applying discount logic and expanding names
+// Function to detect currency using GPT
+async function detectCurrencyWithGPT(text) {
+    const messages = [
+        {
+            role: 'system',
+            content: `
+            You are an AI assistant analyzing receipt data to determine the currency.
+            Instructions:
+            - Based on the terms, symbols, and context within the receipt data, identify the currency as accurately as possible.
+            - Common examples include:
+                - "₹", "INR", "GST" might indicate Indian Rupees.
+                - "$", "USD" might indicate US Dollars.
+                - "£", "GBP" might indicate British Pounds.
+            - Respond with only the currency code in ISO format (e.g., "INR" for Indian Rupees, "USD" for US Dollars).
+            `
+        },
+        {
+            role: 'user',
+            content: `Analyze the following receipt data and identify the currency:\n${text}`
+        }
+    ];
+
+    const completion = await openai.chat.completions.create({
+        model: 'gpt-4o',
+        messages: messages,
+    });
+
+    const currency = completion.choices[0]?.message?.content.trim();
+    console.log("Detected Currency:", currency);
+    return currency || "USD"; // Default to USD if not recognized
+}
+
+// Function to interpret structured text with GPT for items and total
 async function interpretWithGPT(text) {
     const messages = [
         {
@@ -49,15 +81,6 @@ async function interpretWithGPT(text) {
             - Output only in JSON format, with each item structured as { "item": "Item Name", "price": adjustedPrice }.
             - If you see total or sub total or sort any anything related to total (you can interpret when its value is actually sum of all items above) then don't consider it as item.
             - At the end, add a total in the format { "item": "TOTAL", "price": totalAmount }.
-
-            Example Output:
-            [
-                { "item": "Wonder Classic White Bread", "price": 2.99 },
-                { "item": "Wonder Classic White Bread", "price": 2.99 }, // Same item repeated as unique
-                { "item": "Store Brand Whole Milk", "price": 3.00 },
-                { "item": "Tax", "price": 0.30 },
-                { "item": "TOTAL", "price": 32.46 }
-            ]
             `
         },
         {
@@ -72,17 +95,12 @@ async function interpretWithGPT(text) {
     });
 
     let aiResponse = completion.choices[0]?.message?.content;
-
     console.log("Raw GPT Response:", aiResponse); // Log for debugging
 
-    // Clean up the response by removing any code block markers and trimming whitespace
+    // Clean up and parse GPT response
     aiResponse = aiResponse.replace(/```json|```/g, '').trim();
-
-    // Attempt to parse the cleaned response as JSON
     try {
         const parsedResponse = JSON.parse(aiResponse);
-
-        // Filter out the TOTAL item from the parsed response before sending back to frontend
         const items = parsedResponse.filter(item => item.item !== "TOTAL");
 
         return { items, total: parsedResponse.find(item => item.item === "TOTAL")?.price || 0 };
@@ -103,11 +121,13 @@ app.post('/upload-bill', upload.single('bill'), async (req, res) => {
         const command = new DetectDocumentTextCommand(params);
         const textractData = await textractClient.send(command);
 
-        // Preprocess Textract data for GPT
         const structuredText = preprocessTextractData(textractData);
         console.log('Structured Text for GPT:', structuredText);
 
-        // Send preprocessed data to GPT for interpretation
+        // Step 1: Detect currency using GPT
+        const currency = await detectCurrencyWithGPT(structuredText);
+
+        // Step 2: Send preprocessed data to GPT for interpreting items and total
         let interpretedData;
         try {
             interpretedData = await interpretWithGPT(structuredText);
@@ -116,10 +136,12 @@ app.post('/upload-bill', upload.single('bill'), async (req, res) => {
             return res.status(500).send({ message: 'Error in interpreting data with GPT.', error: parseError.message });
         }
 
+        // Send response with items, total, and currency
         res.send({
             message: 'Items interpreted successfully!',
             items: interpretedData.items,
-            total: interpretedData.total // Send total as a separate field
+            total: interpretedData.total,
+            currency // Include detected currency in the response
         });
 
     } catch (err) {
@@ -131,13 +153,3 @@ app.post('/upload-bill', upload.single('bill'), async (req, res) => {
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
-
-
-
-
-
-
-
-
-
-

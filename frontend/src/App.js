@@ -9,6 +9,7 @@ function App() {
   const [items, setItems] = useState(null);
   const [selectedNames, setSelectedNames] = useState([]);
   const [splitResult, setSplitResult] = useState(null);
+  const [currency, setCurrency] = useState('$'); // Default currency symbol
 
   const handleFileChange = (e) => {
     setFile(e.target.files[0]);
@@ -34,8 +35,10 @@ function App() {
           'Content-Type': 'multipart/form-data'
         }
       });
+
       setItems(result.data.items.map(item => ({ ...item, selected: [] }))); // Initialize selected array
       setSelectedNames(names.split(",").map(name => name.trim()));
+      setCurrency(result.data.currency === 'INR' ? '₹' : '$'); // Set currency based on backend response
     } catch (error) {
       console.error("Error processing the document:", error);
       alert("Failed to process the document.");
@@ -43,7 +46,6 @@ function App() {
     setLoading(false);
   };
 
-  // Allow editing item price using an "Edit" button
   const handleEditPrice = (index) => {
     const newPrice = prompt("Enter the new price:", items[index].price);
     if (newPrice) {
@@ -53,7 +55,6 @@ function App() {
     }
   };
 
-  // Add a new item if it was missed in Textract
   const handleAddItem = () => {
     const itemName = prompt("Enter item name:");
     const itemPrice = prompt("Enter item price:");
@@ -78,23 +79,19 @@ function App() {
     setSplitResult(totalPerPerson);
   };
 
-  // Calculate dynamic total based on item prices (without including it in the items list)
   const total = items ? items.reduce((acc, item) => acc + item.price, 0) : 0;
 
-  // Ensure that "Calculate Split" is only enabled when all items are selected at least once
   const allItemsSelected = items && items.every(item => item.selected.length > 0);
 
   return (
     <div className="App">
       <h1>SmartBill Splitter</h1>
 
-      {/* Step 1: File Upload */}
       <div className="upload-section">
         <h2>Step 1: Upload Bill Image</h2>
         <input type="file" onChange={handleFileChange} />
       </div>
 
-      {/* Step 2: Enter Names */}
       <div className="names-section">
         <h2>Step 2: Add Names</h2>
         <input
@@ -106,18 +103,16 @@ function App() {
         />
       </div>
 
-      {/* Step 3: Go Button */}
       <div className="action-section">
         <button onClick={handleGo} disabled={loading || !file || !names}>
           {loading ? "Processing..." : "Go"}
         </button>
       </div>
 
-      {/* Display Items Table */}
       {items && (
         <div className="table-section">
           <h2>Items and Prices</h2>
-          <button onClick={handleAddItem}>Add Item</button> {/* Add Item Button */}
+          <button onClick={handleAddItem}>Add Item</button>
           <table>
             <thead>
               <tr>
@@ -134,7 +129,7 @@ function App() {
               {items.map((item, index) => (
                 <tr key={index}>
                   <td>{item.item}</td>
-                  <td>${item.price.toFixed(2)}</td>
+                  <td>{currency}{item.price.toFixed(2)}</td> {/* Display with currency symbol */}
                   {selectedNames.map(name => (
                     <td key={`${index}-${name}`}>
                       <input
@@ -170,19 +165,18 @@ function App() {
               ))}
             </tbody>
           </table>
-          <h3>Total: <strong>${total.toFixed(2)}</strong></h3> {/* Total display */}
+          <h3>Total: <strong>{currency}{total.toFixed(2)}</strong></h3> {/* Total with currency symbol */}
           <button onClick={handleSplitCalculation} disabled={!allItemsSelected}>Calculate Split</button>
         </div>
       )}
 
-      {/* Display Split Results */}
       {splitResult && (
         <div className="result-section">
           <h2>Split Per Person</h2>
           <ul>
             {Object.entries(splitResult).map(([name, amount]) => (
               <li key={name}>
-                <strong>{name}</strong>: ${amount.toFixed(2)}
+                <strong>{name}</strong>: {currency}{amount.toFixed(2)}
               </li>
             ))}
           </ul>

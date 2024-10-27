@@ -33,16 +33,6 @@ function App() {
     return () => window.removeEventListener("keydown", handleEnterKey);
   }, [file, names, items, checkboxClicked]);
 
-  // Scroll to the items table when items are loaded
-  useEffect(() => {
-    if (items) {
-      const itemsSection = document.getElementById("items-section");
-      if (itemsSection) {
-        itemsSection.scrollIntoView({ behavior: "smooth" });
-      }
-    }
-  }, [items]);
-
   const handleGo = async () => {
     if (!file || !names) {
       setModalMessage("Please upload a file and add names first.");
@@ -70,6 +60,14 @@ function App() {
       setCheckboxClicked(false);
       setSelectedNames(names.split(",").map(name => name.trim())); // Update selected names based on input
       setCurrency(result.data.currency === 'INR' ? '₹' : '$');
+
+      // Scroll to items section after processing "Go"
+      setTimeout(() => {
+        const itemsSection = document.getElementById("items-section");
+        if (itemsSection) {
+          itemsSection.scrollIntoView({ behavior: "smooth" });
+        }
+      }, 100);
     } catch (error) {
       console.error("Error processing the document:", error);
       setModalMessage("Failed to process the document.");
@@ -112,7 +110,7 @@ function App() {
     });
     setSplitResult(totalPerPerson);
 
-    // Scroll down to the Split Result section
+    // Scroll down to the Split Result section after calculation
     setTimeout(() => {
       document.getElementById("split-result").scrollIntoView({ behavior: "smooth" });
     }, 100);

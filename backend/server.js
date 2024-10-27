@@ -10,6 +10,7 @@ const OpenAI = require('openai');
 const app = express();
 const PORT = process.env.PORT;
 
+app.set('trust proxy', 1); // Trust the first proxy
 // Use your frontend's Vercel URL or localhost for development
 const allowedOrigin = process.env.FRONTEND_URL;
 

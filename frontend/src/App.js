@@ -169,13 +169,15 @@ function App() {
         <div id="items-section" className="w-full max-w-4xl bg-white p-6 rounded-lg shadow-lg mb-6">
           <h2 className="text-2xl font-semibold mb-4 text-center text-gray-800">Bill Items and Payers</h2>
           <div className="overflow-x-auto">
-            <table className="w-full border border-gray-300 rounded-lg text-center">
+            <table className="w-full border border-gray-300 rounded-lg text-center table-auto">
               <thead>
                 <tr className="bg-green-100 text-green-800">
                   <th className="p-2 font-semibold">Item</th>
                   <th className="p-2 font-semibold">Price</th>
-                  {selectedNames.map(name => <th key={name} className="p-2 font-semibold">{name}</th>)}
-                  <th className="p-2 font-semibold">Select All</th>
+                  {selectedNames.map(name => (
+                    <th key={name} className="p-2 font-semibold hidden md:table-cell">{name}</th>
+                  ))}
+                  <th className="p-2 font-semibold hidden md:table-cell">Select All</th>
                   <th className="p-2 font-semibold text-right">Edit</th>
                   <th className="p-2 font-semibold text-right">Remove</th>
                 </tr>
@@ -186,7 +188,7 @@ function App() {
                     <td className="p-2 text-gray-700">{item.item}</td>
                     <td className="p-2 text-gray-700">{currency}{item.price.toFixed(2)}</td>
                     {selectedNames.map(name => (
-                      <td key={`${index}-${name}`} className="p-2 text-center">
+                      <td key={`${index}-${name}`} className="p-2 text-center hidden md:table-cell">
                         <input
                           type="checkbox"
                           checked={item.selected.includes(name)}
@@ -195,7 +197,7 @@ function App() {
                         />
                       </td>
                     ))}
-                    <td className="p-2 text-center">
+                    <td className="p-2 text-center hidden md:table-cell">
                       <input
                         type="checkbox"
                         checked={item.selected.length === selectedNames.length} // Check if all selected

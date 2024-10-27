@@ -3,7 +3,7 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const multer = require('multer');
-const rateLimit = require('express-rate-limit');
+const rateLimit = require('express-rate-limit'); // Import rate limiter
 const { TextractClient, DetectDocumentTextCommand } = require('@aws-sdk/client-textract');
 const OpenAI = require('openai');
 
@@ -30,11 +30,11 @@ const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY,
 });
 
-// Apply rate limiting to the /upload-bill endpoint
-const uploadBillLimiter = rateLimit({
+// Set up rate limiter middleware
+const limiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 10, // limit each IP to 10 requests per windowMs
-    message: "Too many requests from this IP, please try again after 15 minutes."
+    max: 10, // Limit each IP to 10 requests per 15 minutes
+    message: 'Too many requests, please try again later.',
 });
 
 // Function to preprocess Textract data for GPT
@@ -125,8 +125,8 @@ async function interpretWithGPT(text) {
     }
 }
 
-// Apply rate limiting middleware only to the /upload-bill route
-app.post('/upload-bill', uploadBillLimiter, upload.single('bill'), async (req, res) => {
+// Apply the rate limiter only to the `/upload-bill` endpoint
+app.post('/upload-bill', limiter, upload.single('bill'), async (req, res) => {
     if (!req.file) {
         return res.status(400).send('No file uploaded.');
     }
@@ -166,7 +166,7 @@ app.post('/upload-bill', uploadBillLimiter, upload.single('bill'), async (req, r
     }
 });
 
+// Start the server
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
-

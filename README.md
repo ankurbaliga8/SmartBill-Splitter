@@ -20,6 +20,7 @@ An AI-powered application to interpret and split expenses from scanned or upload
   - `aws-sdk/client-textract` - For document text extraction
   - `OpenAI` - For interpreting extracted text into structured data
   - `axios` - For handling HTTP requests in the frontend
+  - `tailwindcss` - For UI styling in the frontend
 
 ## Getting Started
 
@@ -65,7 +66,33 @@ An AI-powered application to interpret and split expenses from scanned or upload
    ```bash
    cd ../frontend
    npm install axios react react-dom
+   npx tailwindcss init -p
    ```
+
+5. **Configure Tailwind CSS**: Update your `tailwind.config.js` file:
+
+```bash
+/** @type {import('tailwindcss').Config} */
+module.exports = {
+  content: [
+    "./src/**/*.{js,jsx,ts,tsx}",
+  ],
+  theme: {
+    extend: {},
+  },
+  plugins: [],
+}
+
+```
+
+6. \*\*Set Up Tailwind CSS in Frontend\*\*: Add the following lines to the top of your `index.css` in the `src` folder:
+
+```bash
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+```
 
 ### Usage
 

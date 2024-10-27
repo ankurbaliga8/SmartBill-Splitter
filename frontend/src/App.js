@@ -58,10 +58,11 @@ function App() {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
 
+      // Reset items, splitResult, and checkbox state when "Go" is clicked
       setItems(result.data.items.map(item => ({ ...item, selected: [] }))); // Clear selections
       setSplitResult(null);
       setCheckboxClicked(false);
-      setSelectedNames(names.split(",").map(name => name.trim()));
+      setSelectedNames(names.split(",").map(name => name.trim())); // Update selected names based on input
       setCurrency(result.data.currency === 'INR' ? '₹' : '$');
     } catch (error) {
       console.error("Error processing the document:", error);

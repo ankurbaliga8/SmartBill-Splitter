@@ -171,10 +171,10 @@ function App() {
           <table className="min-w-full border border-gray-300 rounded-lg text-center">
             <thead>
               <tr className="bg-green-100 text-green-800">
+                <th className="p-2 font-semibold min-w-[150px]">Item</th>
+                <th className="p-2 font-semibold min-w-[75px]">Price</th>
                 <th className="p-2 font-semibold">Select All</th>
-                <th className="p-2 font-semibold">Item</th>
-                <th className="p-2 font-semibold">Price</th>
-                {selectedNames.map(name => <th key={name} className="p-2 font-semibold">{name}</th>)}
+                {selectedNames.map(name => <th key={name} className="p-2 font-semibold min-w-[100px]">{name}</th>)}
                 <th className="p-2 font-semibold text-right">Edit</th>
                 <th className="p-2 font-semibold text-right">Remove</th>
               </tr>
@@ -182,16 +182,16 @@ function App() {
             <tbody>
               {items.map((item, index) => (
                 <tr key={index} className="border-b hover:bg-gray-100 transition">
+                  <td className="p-2 text-gray-700 break-words">{item.item}</td>
+                  <td className="p-2 text-gray-700">{currency}{item.price.toFixed(2)}</td>
                   <td className="p-2 text-center">
                     <input
                       type="checkbox"
-                      checked={item.selected.length === selectedNames.length}
+                      checked={item.selected.length === selectedNames.length} // Check if all selected
                       onChange={(e) => handleSelectAllChange(index, e.target.checked)}
                       className="accent-purple-500"
                     />
                   </td>
-                  <td className="p-2 text-gray-700 text-left whitespace-normal break-words">{item.item}</td>
-                  <td className="p-2 text-gray-700">{currency}{item.price.toFixed(2)}</td>
                   {selectedNames.map(name => (
                     <td key={`${index}-${name}`} className="p-2 text-center">
                       <input

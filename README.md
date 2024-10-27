@@ -13,7 +13,7 @@ An AI-powered application to interpret and split expenses from scanned or upload
 ## Technologies Used
 
 - **Backend**: Node.js, Express, AWS Textract, OpenAI API
-- **Frontend**: React, Axios, HTML, CSS
+- **Frontend**: React, Tailwind CSS, Axios, HTML
 - **Dependencies**:
   - `dotenv` - For environment variable management
   - `multer` - For file uploads

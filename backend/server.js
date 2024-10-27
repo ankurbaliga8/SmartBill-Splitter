@@ -3,7 +3,7 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const multer = require('multer');
-const rateLimit = require('express-rate-limit'); // Import rate limiter
+const rateLimit = require('express-rate-limit');
 const { TextractClient, DetectDocumentTextCommand } = require('@aws-sdk/client-textract');
 const OpenAI = require('openai');
 
@@ -11,11 +11,12 @@ const app = express();
 const PORT = process.env.PORT;
 
 app.set('trust proxy', 1); // Trust the first proxy
+
 // Use your frontend's Vercel URL or localhost for development
 const allowedOrigin = process.env.FRONTEND_URL;
 
 app.use(cors({
-    origin: allowedOrigin, // Allow only the frontend URL
+    origin: allowedOrigin,
 }));
 
 app.use(express.json());
@@ -33,9 +34,10 @@ const openai = new OpenAI({
 
 // Set up rate limiter middleware
 const limiter = rateLimit({
-    windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 10, // Limit each IP to 10 requests per 15 minutes
+    windowMs: 15 * 60 * 1000,
+    max: 10,
     message: 'Too many requests, please try again later.',
+    keyGenerator: (req) => req.ip, // Explicitly using req.ip for IP tracking
 });
 
 // Function to preprocess Textract data for GPT
@@ -111,9 +113,8 @@ async function interpretWithGPT(text) {
     });
 
     let aiResponse = completion.choices[0]?.message?.content;
-    console.log("Raw GPT Response:", aiResponse); // Log for debugging
+    console.log("Raw GPT Response:", aiResponse);
 
-    // Clean up and parse GPT response
     aiResponse = aiResponse.replace(/```json|```/g, '').trim();
     try {
         const parsedResponse = JSON.parse(aiResponse);
@@ -141,10 +142,8 @@ app.post('/upload-bill', limiter, upload.single('bill'), async (req, res) => {
         const structuredText = preprocessTextractData(textractData);
         console.log('Structured Text for GPT:', structuredText);
 
-        // Step 1: Detect currency using GPT
         const currency = await detectCurrencyWithGPT(structuredText);
 
-        // Step 2: Send preprocessed data to GPT for interpreting items and total
         let interpretedData;
         try {
             interpretedData = await interpretWithGPT(structuredText);
@@ -153,12 +152,11 @@ app.post('/upload-bill', limiter, upload.single('bill'), async (req, res) => {
             return res.status(500).send({ message: 'Error in interpreting data with GPT.', error: parseError.message });
         }
 
-        // Send response with items, total, and currency
         res.send({
             message: 'Items interpreted successfully!',
             items: interpretedData.items,
             total: interpretedData.total,
-            currency // Include detected currency in the response
+            currency
         });
 
     } catch (err) {

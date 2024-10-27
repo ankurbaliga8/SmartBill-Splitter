@@ -158,7 +158,8 @@ app.post('/upload-bill', upload.single('bill'), async (req, res) => {
         res.status(500).send({ message: 'Error processing document.', error: err.message });
     }
 });
-
+// Start the server
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
+

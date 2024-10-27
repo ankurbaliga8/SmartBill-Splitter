@@ -49,6 +49,12 @@ function App() {
       return;
     }
 
+    // Check if names contain at least one comma
+    if (!names.includes(',')) {
+      setModalMessage("Please separate names with commas, e.g., 'John, Jane, Doe'.");
+      return;
+    }
+
     setLoading(true);
     const formData = new FormData();
     formData.append('bill', file);
@@ -70,6 +76,7 @@ function App() {
     }
     setLoading(false);
   };
+
 
   const handleEditPrice = (index) => {
     const newPrice = prompt("Enter the new price:", items[index].price);

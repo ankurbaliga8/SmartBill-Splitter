@@ -10,7 +10,6 @@ const OpenAI = require('openai');
 const app = express();
 const PORT = process.env.PORT;
 
-app.set('trust proxy', 1); // Trust the first proxy
 
 // Use your frontend's Vercel URL or localhost for development
 const allowedOrigin = process.env.FRONTEND_URL;
@@ -37,7 +36,6 @@ const limiter = rateLimit({
     windowMs: 15 * 60 * 1000,
     max: 10,
     message: 'Too many requests, please try again later.',
-    keyGenerator: (req) => req.ip, // Explicitly using req.ip for IP tracking
 });
 
 // Function to preprocess Textract data for GPT

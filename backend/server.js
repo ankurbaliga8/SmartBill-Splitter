@@ -10,12 +10,11 @@ const OpenAI = require('openai');
 const app = express();
 const PORT = process.env.PORT;
 
-
 // Use your frontend's Vercel URL or localhost for development
 const allowedOrigin = process.env.FRONTEND_URL;
 
 app.use(cors({
-    origin: allowedOrigin,
+    origin: allowedOrigin, // Allow only the frontend URL
 }));
 
 app.use(express.json());
@@ -31,11 +30,11 @@ const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY,
 });
 
-// Set up rate limiter middleware
-const limiter = rateLimit({
-    windowMs: 15 * 60 * 1000,
-    max: 10,
-    message: 'Too many requests, please try again later.',
+// Apply rate limiting to the /upload-bill endpoint
+const uploadBillLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 10, // limit each IP to 10 requests per windowMs
+    message: "Too many requests from this IP, please try again after 15 minutes."
 });
 
 // Function to preprocess Textract data for GPT
@@ -111,8 +110,9 @@ async function interpretWithGPT(text) {
     });
 
     let aiResponse = completion.choices[0]?.message?.content;
-    console.log("Raw GPT Response:", aiResponse);
+    console.log("Raw GPT Response:", aiResponse); // Log for debugging
 
+    // Clean up and parse GPT response
     aiResponse = aiResponse.replace(/```json|```/g, '').trim();
     try {
         const parsedResponse = JSON.parse(aiResponse);
@@ -125,8 +125,8 @@ async function interpretWithGPT(text) {
     }
 }
 
-// Apply the rate limiter only to the `/upload-bill` endpoint
-app.post('/upload-bill', limiter, upload.single('bill'), async (req, res) => {
+// Apply rate limiting middleware only to the /upload-bill route
+app.post('/upload-bill', uploadBillLimiter, upload.single('bill'), async (req, res) => {
     if (!req.file) {
         return res.status(400).send('No file uploaded.');
     }
@@ -140,8 +140,10 @@ app.post('/upload-bill', limiter, upload.single('bill'), async (req, res) => {
         const structuredText = preprocessTextractData(textractData);
         console.log('Structured Text for GPT:', structuredText);
 
+        // Step 1: Detect currency using GPT
         const currency = await detectCurrencyWithGPT(structuredText);
 
+        // Step 2: Send preprocessed data to GPT for interpreting items and total
         let interpretedData;
         try {
             interpretedData = await interpretWithGPT(structuredText);
@@ -150,11 +152,12 @@ app.post('/upload-bill', limiter, upload.single('bill'), async (req, res) => {
             return res.status(500).send({ message: 'Error in interpreting data with GPT.', error: parseError.message });
         }
 
+        // Send response with items, total, and currency
         res.send({
             message: 'Items interpreted successfully!',
             items: interpretedData.items,
             total: interpretedData.total,
-            currency
+            currency // Include detected currency in the response
         });
 
     } catch (err) {
@@ -163,7 +166,7 @@ app.post('/upload-bill', limiter, upload.single('bill'), async (req, res) => {
     }
 });
 
-// Start the server
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
+

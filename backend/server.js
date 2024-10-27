@@ -1,10 +1,9 @@
-
-
 require('dotenv').config();
 
 const express = require('express');
 const cors = require('cors');
 const multer = require('multer');
+const rateLimit = require('express-rate-limit'); // Import rate limiter
 const { TextractClient, DetectDocumentTextCommand } = require('@aws-sdk/client-textract');
 const OpenAI = require('openai');
 
@@ -29,6 +28,13 @@ const textractClient = new TextractClient({
 
 const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY,
+});
+
+// Set up rate limiter middleware
+const limiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 10, // Limit each IP to 10 requests per 15 minutes
+    message: 'Too many requests, please try again later.',
 });
 
 // Function to preprocess Textract data for GPT
@@ -119,7 +125,8 @@ async function interpretWithGPT(text) {
     }
 }
 
-app.post('/upload-bill', upload.single('bill'), async (req, res) => {
+// Apply the rate limiter only to the `/upload-bill` endpoint
+app.post('/upload-bill', limiter, upload.single('bill'), async (req, res) => {
     if (!req.file) {
         return res.status(400).send('No file uploaded.');
     }
@@ -158,8 +165,8 @@ app.post('/upload-bill', upload.single('bill'), async (req, res) => {
         res.status(500).send({ message: 'Error processing document.', error: err.message });
     }
 });
+
 // Start the server
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
-

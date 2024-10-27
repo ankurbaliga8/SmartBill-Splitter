@@ -85,6 +85,7 @@ async function interpretWithGPT(text) {
             - Treat each item in the receipt as unique, even if it appears multiple times with the same name.
             - If you see "discount" or "savings," apply it to the previous item and show the item name with the final adjusted price only.
             - Expand any abbreviations in item names (e.g., "SB WHL MLK" becomes "Store Brand Whole Milk").
+            - If you see GST, VAT, CGST, SGST or any other tax, include it as a separate item with the tax name (Indian currency if detected).
             - Calculate the total of all items after applying discounts and include this in the JSON output.
             - Output only in JSON format, with each item structured as { "item": "Item Name", "price": adjustedPrice }.
             - If you see total or sub total or sort any anything related to total (you can interpret when its value is actually sum of all items above) then don't consider it as item.

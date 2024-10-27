@@ -166,66 +166,62 @@ function App() {
       </div>
 
       {items && (
-        <div id="items-section" className="w-full max-w-4xl bg-white p-6 rounded-lg shadow-lg mb-6">
+        <div id="items-section" className="w-full max-w-4xl bg-white p-6 rounded-lg shadow-lg mb-6 overflow-x-auto">
           <h2 className="text-2xl font-semibold mb-4 text-center text-gray-800">Bill Items and Payers</h2>
-          <div className="overflow-x-auto">
-            <table className="w-full border border-gray-300 rounded-lg text-center table-auto">
-              <thead>
-                <tr className="bg-green-100 text-green-800">
-                  <th className="p-2 font-semibold">Item</th>
-                  <th className="p-2 font-semibold">Price</th>
+          <table className="min-w-full border border-gray-300 rounded-lg text-center">
+            <thead>
+              <tr className="bg-green-100 text-green-800">
+                <th className="p-2 font-semibold">Item</th>
+                <th className="p-2 font-semibold">Price</th>
+                {selectedNames.map(name => <th key={name} className="p-2 font-semibold">{name}</th>)}
+                <th className="p-2 font-semibold">Select All</th>
+                <th className="p-2 font-semibold text-right">Edit</th>
+                <th className="p-2 font-semibold text-right">Remove</th>
+              </tr>
+            </thead>
+            <tbody>
+              {items.map((item, index) => (
+                <tr key={index} className="border-b hover:bg-gray-100 transition">
+                  <td className="p-2 text-gray-700">{item.item}</td>
+                  <td className="p-2 text-gray-700">{currency}{item.price.toFixed(2)}</td>
                   {selectedNames.map(name => (
-                    <th key={name} className="p-2 font-semibold hidden md:table-cell">{name}</th>
-                  ))}
-                  <th className="p-2 font-semibold hidden md:table-cell">Select All</th>
-                  <th className="p-2 font-semibold text-right">Edit</th>
-                  <th className="p-2 font-semibold text-right">Remove</th>
-                </tr>
-              </thead>
-              <tbody>
-                {items.map((item, index) => (
-                  <tr key={index} className="border-b hover:bg-gray-100 transition">
-                    <td className="p-2 text-gray-700">{item.item}</td>
-                    <td className="p-2 text-gray-700">{currency}{item.price.toFixed(2)}</td>
-                    {selectedNames.map(name => (
-                      <td key={`${index}-${name}`} className="p-2 text-center hidden md:table-cell">
-                        <input
-                          type="checkbox"
-                          checked={item.selected.includes(name)}
-                          onChange={() => handleCheckboxChange(index, name)}
-                          className="accent-purple-500"
-                        />
-                      </td>
-                    ))}
-                    <td className="p-2 text-center hidden md:table-cell">
+                    <td key={`${index}-${name}`} className="p-2 text-center">
                       <input
                         type="checkbox"
-                        checked={item.selected.length === selectedNames.length} // Check if all selected
-                        onChange={(e) => handleSelectAllChange(index, e.target.checked)}
+                        checked={item.selected.includes(name)}
+                        onChange={() => handleCheckboxChange(index, name)}
                         className="accent-purple-500"
                       />
                     </td>
-                    <td className="p-2 text-right">
-                      <button
-                        onClick={() => handleEditPrice(index)}
-                        className="text-blue-600 font-medium hover:text-blue-800 transition underline"
-                      >
-                        Edit
-                      </button>
-                    </td>
-                    <td className="p-2 text-right">
-                      <button
-                        onClick={() => handleRemoveItem(index)}
-                        className="text-red-600 font-medium hover:text-red-800 transition underline"
-                      >
-                        Remove
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                  ))}
+                  <td className="p-2 text-center">
+                    <input
+                      type="checkbox"
+                      checked={item.selected.length === selectedNames.length} // Check if all selected
+                      onChange={(e) => handleSelectAllChange(index, e.target.checked)}
+                      className="accent-purple-500"
+                    />
+                  </td>
+                  <td className="p-2 text-right">
+                    <button
+                      onClick={() => handleEditPrice(index)}
+                      className="text-blue-600 font-medium hover:text-blue-800 transition underline"
+                    >
+                      Edit
+                    </button>
+                  </td>
+                  <td className="p-2 text-right">
+                    <button
+                      onClick={() => handleRemoveItem(index)}
+                      className="text-red-600 font-medium hover:text-red-800 transition underline"
+                    >
+                      Remove
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
           <div className="flex justify-end mt-4">
             <button
               onClick={handleAddItem}
@@ -248,7 +244,7 @@ function App() {
       )}
 
       {splitResult && (
-        <div id="split-result" className="w-full max-w-sm bg-white p-4 rounded-lg shadow-lg mt-6 px-20 ">
+        <div id="split-result" className="w-full max-w-sm bg-white p-4 rounded-lg shadow-lg mt-6 px-20">
           <h2 className="text-2xl font-semibold mb-4 text-green-700 text-center">Split Per Person</h2>
           <ul className="divide-y divide-gray-200">
             {Object.entries(splitResult).map(([name, amount]) => (

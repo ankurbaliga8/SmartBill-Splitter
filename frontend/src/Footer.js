@@ -7,7 +7,7 @@ const Footer = () => (
             <p className="mb-1">SmartBill Splitter &copy; {new Date().getFullYear()} - Developed by <strong>Ankur Baliga</strong></p>
             <p className="mb-2">Making bill-splitting simple, accurate, and hassle-free.</p>
             <div className="flex justify-center space-x-4">
-                <a href="https://www.linkedin.com/feed/" target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:text-blue-700">
+                <a href="hhttps://www.linkedin.com/in/ankurbaliga/" target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:text-blue-700">
                     LinkedIn
                 </a>
                 <a href="https://github.com/ankurbaliga8" target="_blank" rel="noopener noreferrer" className="text-gray-700 hover:text-black">

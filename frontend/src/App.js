@@ -18,6 +18,7 @@ function App() {
   const handleFileChange = (e) => setFile(e.target.files[0]);
   const handleNamesChange = (e) => setNames(e.target.value);
 
+  // Logic for enabling/disabling Enter on "Go" and "Calculate Split"
   useEffect(() => {
     const handleEnterKey = (event) => {
       if (event.key === "Enter") {
@@ -38,6 +39,7 @@ function App() {
       return;
     }
 
+    // Check if names contain at least one comma
     if (!names.includes(',')) {
       setModalMessage("Please separate names with commas, e.g., 'John, Jane, Doe'.");
       return;
@@ -52,12 +54,14 @@ function App() {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
 
+      // Reset items, splitResult, and checkbox state when "Go" is clicked
       setItems(result.data.items.map(item => ({ ...item, selected: [] }))); // Clear selections
       setSplitResult(null);
       setCheckboxClicked(false);
-      setSelectedNames(names.split(",").map(name => name.trim()));
+      setSelectedNames(names.split(",").map(name => name.trim())); // Update selected names based on input
       setCurrency(result.data.currency === 'INR' ? '₹' : '$');
 
+      // Scroll to items section after processing "Go"
       setTimeout(() => {
         const itemsSection = document.getElementById("items-section");
         if (itemsSection) {
@@ -106,6 +110,7 @@ function App() {
     });
     setSplitResult(totalPerPerson);
 
+    // Scroll down to the Split Result section after calculation
     setTimeout(() => {
       document.getElementById("split-result").scrollIntoView({ behavior: "smooth" });
     }, 100);
@@ -167,11 +172,11 @@ function App() {
       </div>
 
       {items && (
-        <div id="items-section" className="w-full max-w-4xl bg-white p-6 rounded-lg shadow-lg mb-6">
+        <div id="items-section" className="w-full max-w-4xl bg-white p-6 rounded-lg shadow-lg mb-6 overflow-x-auto">
           <h2 className="text-2xl font-semibold mb-4 text-center text-gray-800">Bill Items and Payers</h2>
           <table className="min-w-full border border-gray-300 rounded-lg text-center">
-            <thead className="sticky top-0 bg-green-100 z-10">
-              <tr className="text-green-800">
+            <thead>
+              <tr className="bg-green-100 text-green-800">
                 <th className="p-2 font-semibold min-w-[150px]">Item</th>
                 <th className="p-2 font-semibold min-w-[75px]">Price</th>
                 <th className="p-2 font-semibold">Select All</th>
@@ -188,7 +193,7 @@ function App() {
                   <td className="p-2 text-center">
                     <input
                       type="checkbox"
-                      checked={item.selected.length === selectedNames.length}
+                      checked={item.selected.length === selectedNames.length} // Check if all selected
                       onChange={(e) => handleSelectAllChange(index, e.target.checked)}
                       className="accent-purple-500"
                     />

@@ -3,3 +3,25 @@
 @tailwind utilities;
 
 /* You can add custom styles below if needed */
+/* Show both horizontal and vertical scrollbars at all times */
+
+/* Ensure scrollbars are always visible in all browsers, including Chrome */
+.scroll-container {
+  overflow-y: auto !important;
+  overflow-x: auto !important;
+  scrollbar-width: thin !important; /* Firefox compatibility */
+  scrollbar-color: #d4d4d8 #e5e7eb !important;
+}
+
+/* WebKit and Chrome Browsers */
+.scroll-container::-webkit-scrollbar {
+  height: 10px !important; /* Horizontal scrollbar height */
+  width: 10px !important; /* Vertical scrollbar width */
+  background-color: #e5e7eb !important; /* Track background */
+}
+
+.scroll-container::-webkit-scrollbar-thumb {
+  background-color: #333333 !important; /* Scrollbar thumb color */
+  border-radius: 4px !important;
+  border: 2px solid #e5e7eb !important; /* Border color for better contrast */
+}

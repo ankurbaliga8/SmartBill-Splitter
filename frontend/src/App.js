@@ -174,14 +174,19 @@ function App() {
       {items && (
         <div id="items-section" className="w-full max-w-4xl bg-white p-6 rounded-lg shadow-lg mb-6">
           <h2 className="text-2xl font-semibold mb-4 text-center text-gray-800">Bill Items and Payers</h2>
-          <div className="overflow-y-auto max-h-[400px]">
+          <div className="text-sm text-gray-500 text-center mb-2">Scroll right and down to view all items and payers.s</div>
+
+          {/* Apply scroll-container class here for both horizontal and vertical scrolling */}
+          <div className="overflow-x-auto overflow-y-auto max-h-[400px] scroll-container">
             <table className="min-w-full border border-gray-300 rounded-lg text-center">
               <thead className="sticky top-0 bg-green-100 z-10">
                 <tr className="text-green-800">
                   <th className="p-2 font-semibold min-w-[150px]">Item</th>
                   <th className="p-2 font-semibold min-w-[75px]">Price</th>
                   <th className="p-2 font-semibold">Select All</th>
-                  {selectedNames.map(name => <th key={name} className="p-2 font-semibold min-w-[100px]">{name}</th>)}
+                  {selectedNames.map(name => (
+                    <th key={name} className="p-2 font-semibold min-w-[100px]">{name}</th>
+                  ))}
                   <th className="p-2 font-semibold text-right">Edit</th>
                   <th className="p-2 font-semibold text-right">Remove</th>
                 </tr>
@@ -194,7 +199,7 @@ function App() {
                     <td className="p-2 text-center">
                       <input
                         type="checkbox"
-                        checked={item.selected.length === selectedNames.length} // Check if all selected
+                        checked={item.selected.length === selectedNames.length}
                         onChange={(e) => handleSelectAllChange(index, e.target.checked)}
                         className="accent-purple-500"
                       />

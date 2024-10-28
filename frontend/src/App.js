@@ -174,7 +174,7 @@ function App() {
       {items && (
         <div id="items-section" className="w-full max-w-4xl bg-white p-6 rounded-lg shadow-lg mb-6">
           <h2 className="text-2xl font-semibold mb-4 text-center text-gray-800">Bill Items and Payers</h2>
-          <div className="text-sm text-gray-500 text-center mb-2">Scroll right and down to view all items and payers.s</div>
+          <div className="text-sm text-gray-500 text-center mb-2 font-bold">Scroll Right and Down to view all items and payers</div>
 
           {/* Apply scroll-container class here for both horizontal and vertical scrolling */}
           <div className="overflow-x-auto overflow-y-auto max-h-[400px] scroll-container">
